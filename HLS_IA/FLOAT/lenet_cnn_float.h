@@ -116,9 +116,9 @@ void Fc2_400_10(float 	input[FC1_NBOUTPUT], 			        // IN
 	float 	output[FC2_NBOUTPUT])		        // OUT 
 {
 	for (short k = 0; k < FC2_NBOUTPUT; k++) {        // For each of 10 output classes
-		output[k] = fc2_bias[k];                          // Start with bias
+		output[k] = bias[k];                          // Start with bias
 		for (short i = 0; i < FC1_NBOUTPUT; i++)     // Sum over all 400 inputs
-			output[k] += fc1_input[i] * fc2_kernel[k][i];
+			output[k] += input[i] * kernel[k][i];
 		// No ReLU here - this is the final classification layer
 	}
 }
