@@ -69,18 +69,17 @@ void Conv1_28x28x1_5x5x20_1_0(	float 			input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH],
 void Pool1_24x24x20_2x2x20_2_0(	float 	input[CONV1_NBOUTPUT][CONV1_HEIGHT][CONV1_WIDTH], 	    // IN
 				                float 	output[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH])	// OUT
 {
-	short y = 0;
-	float max = 0;
 	for (short z = 0; z < CONV1_NBOUTPUT; z++) {
-		for (short x = 0; x < CONV1_WIDTH - CONV1_STRIDE;x += CONV1_STRIDE) {
-			y = x;
-			float tab[4] = { conv1_output[z][y][x], conv1_output[z][y][x + 1],conv1_output[z][y + 1][x],conv1_output[z][y + 1][x + 1] }
-			max = tab[0];
-			for (short i = 1; i < 3;i++) {
-				max = max < tab[i] ? tab[i] : max;
+		for (short x = 0; x < CONV1_WIDTH - CONV1_STRIDE; x += CONV1_STRIDE) {
+			for (short y = 0; y < CONV1_HEIGHT - CONV1_STRIDE; y += CONV1_STRIDE) {
+				float tab[4] = { input[z][y][x], input[z][y][x + 1],
+								input[z][y + 1][x], input[z][y + 1][x + 1] };
+				float max = tab[0];
+				for (short i = 1; i < 4; i++) {  // Changed to i < 4
+					max = max < tab[i] ? tab[i] : max;
+				}
+				output[z][y / 2][x / 2] = max;
 			}
-			pool1_output[z][y / 2][x / 2] = max;
-
 		}
 	}
 }
