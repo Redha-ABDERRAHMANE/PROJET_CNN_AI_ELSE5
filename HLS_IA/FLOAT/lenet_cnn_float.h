@@ -67,7 +67,23 @@ void Conv1_28x28x1_5x5x20_1_0(	float 			input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH],
 
 
 void Pool1_24x24x20_2x2x20_2_0(	float 	input[CONV1_NBOUTPUT][CONV1_HEIGHT][CONV1_WIDTH], 	    // IN
-				                float 	output[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH]);		// OUT
+				                float 	output[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH])	// OUT
+{
+	short y = 0;
+	float max = 0;
+	for (short z = 0; z < CONV1_NBOUTPUT; z++) {
+		for (short x = 0; x < CONV1_WIDTH - CONV1_STRIDE;x += CONV1_STRIDE) {
+			y = x;
+			float tab[4] = { conv1_output[z][y][x], conv1_output[z][y][x + 1],conv1_output[z][y + 1][x],conv1_output[z][y + 1][x + 1] }
+			max = tab[0];
+			for (short i = 1; i < 3;i++) {
+				max = max < tab[i] ? tab[i] : max;
+			}
+			pool1_output[z][y / 2][x / 2] = max;
+
+		}
+	}
+}
 
 void Conv2_12x12x20_5x5x40_1_0(	float input[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH], 	            // IN
 				                float kernel[CONV2_NBOUTPUT][POOL1_NBOUTPUT][CONV2_DIM][CONV2_DIM], 	// IN
@@ -80,12 +96,34 @@ void Pool2_8x8x40_2x2x40_2_0(	float 	input[CONV2_NBOUTPUT][CONV2_HEIGHT][CONV2_W
 void Fc1_40_400(	float 	input[POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH], 			        // IN
 			        float 	kernel[FC1_NBOUTPUT][POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH],	// IN
 			        float 	bias[FC1_NBOUTPUT],							                        // IN
-			        float 	output[FC1_NBOUTPUT]); 							                    // OUT
+			        float 	output[FC1_NBOUTPUT])						                    // OUT
 
-void Fc2_400_10(	float 	input[FC1_NBOUTPUT], 			        // IN
-			        float 	kernel[FC2_NBOUTPUT][FC1_NBOUTPUT],	    // IN
-			        float 	bias[FC2_NBOUTPUT],			            // IN
-			        float 	output[FC2_NBOUTPUT]); 			        // OUT
+{ 
+	for (short k = 0; k < FC1_NBOUTPUT; k++) {
+		output[k] = bias[k];
+		for (short z = 0; z < POOL2_NBOUTPUT; z++)
+			for (short y = 0; y < POOL2_HEIGHT; y++)
+				for (short x = 0; x < POOL2_WIDTH; x++)
+					output[k] += output[z][y][x] * kernel[k][z][y][x];
+		output[k] = (output[k] > 0) ? output[k] : 0; // ReLU
+	}
+
+
+}
+
+void Fc2_400_10(float 	input[FC1_NBOUTPUT], 			        // IN
+	float 	kernel[FC2_NBOUTPUT][FC1_NBOUTPUT],	    // IN
+	float 	bias[FC2_NBOUTPUT],			            // IN
+	float 	output[FC2_NBOUTPUT])		        // OUT 
+{
+	for (short k = 0; k < FC2_NBOUTPUT; k++) {        // For each of 10 output classes
+		output[k] = fc2_bias[k];                          // Start with bias
+		for (short i = 0; i < FC1_NBOUTPUT; i++)     // Sum over all 400 inputs
+			output[k] += fc1_input[i] * fc2_kernel[k][i];
+		// No ReLU here - this is the final classification layer
+	}
+}
+
 
 void Softmax(float vector_in[FC2_NBOUTPUT], float vector_out[FC2_NBOUTPUT]); 
 

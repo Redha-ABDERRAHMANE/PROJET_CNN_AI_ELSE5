@@ -57,22 +57,7 @@ void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
   }
 */
 
-  Pool1_24x24x20_2x2x20_2_0(conv1_output, pool1_output) {
-      short y = 0;
-      float max = 0;
-      for (short z = 0; z < CONV1_NBOUTPUT; z++) {
-          for (short x = 0; x < CONV1_WIDTH - CONV1_STRIDE;x += CONV1_STRIDE) {
-              y = x;
-              float tab [4]= { conv1_output[z][y][x], conv1_output[z][y][x+1],conv1_output[z][y+1][x],conv1_output[z][y+1][x+1]}
-              max = tab[0];
-              for (short i = 1; i < 3;i++) {
-                  max = max < tab[i] ? tab[i] : max;
-              }
-              pool1_output[z][y / 2][x / 2] = max;
-
-          }
-      }
-  }
+  Pool1_24x24x20_2x2x20_2_0(conv1_output, pool1_output);
 /*  printf("\nPOOL1_WIDTH / POOL1_HEIGHT: %d / %d\n", POOL1_WIDTH, POOL1_HEIGHT); 
   WritePgmFile(output_filename, (float *)POOL1_OUTPUT[0], POOL1_WIDTH, POOL1_HEIGHT); 
   printf("\nPool1 output[0]: \n"); 
@@ -105,34 +90,14 @@ void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
   }
 */
 
-  Fc1_40_400(pool2_output, fc1_kernel, fc1_bias, fc1_output) {
-
-      for (short k = 0; k < FC1_NBOUTPUT; k++) {
-          output[k] = fc1_bias[k];
-          for (short z = 0; z < POOL2_NBOUTPUT; z++)
-              for (short y = 0; y < POOL2_HEIGHT; y++)
-                  for (short x = 0; x < POOL2_WIDTH; x++)
-                      output[k] += pool2_output[z][y][x] * fc1_kernel[k][z][y][x];
-          output[k] = (output[k] > 0) ? output[k] : 0; // ReLU
-      }
-
-  }
+  Fc1_40_400(pool2_output, fc1_kernel, fc1_bias, fc1_output);
 /*  printf("\n\nFc1 output[0..%d]: \n", FC1_NBOUTPUT-1);
   for (k = 0; k < FC1_NBOUTPUT; k++)
     printf("%.2f ", fc1_output[k]); 
 */
 
-  Fc2_400_10(fc1_output, fc2_kernel, fc2_bias, output) {
-
-
-      for (short k = 0; k < FC2_NBOUTPUT; k++) {        // For each of 10 output classes
-          output[k] = fc2_bias[k];                          // Start with bias
-          for (short i = 0; i < FC1_NBOUTPUT; i++)     // Sum over all 400 inputs
-              output[k] += fc1_input[i] * fc2_kernel[k][i];
-          // No ReLU here - this is the final classification layer
-      }
-
-  }
+  Fc2_400_10(fc1_output, fc2_kernel, fc2_bias, output);
+  
 /*  printf("\n\nFc2 output[0..%d]: \n", FC2_NBOUTPUT-1);
   for (k = 0; k < FC2_NBOUTPUT; k++)
     printf("%.2f ", output[k]); 
