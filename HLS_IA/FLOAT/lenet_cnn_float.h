@@ -66,16 +66,16 @@ void Conv1_28x28x1_5x5x20_1_0(float 			input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 
 	float 		    output[CONV1_NBOUTPUT][CONV1_HEIGHT][CONV1_WIDTH]) 		// OUT
 {
 	float res = 0.0f;
-	for (short filter_index = 0; filter_index < CONV1_DIM; filter_index++) { // FILTER AND IMAGE DON'T SHARE THE SAME DIMENSION!!!!
-		for (short x = 0;x < IMG_WIDTH - CONV1_STRIDE;x += CONV1_STRIDE) {
-			for (short y = 0; y < IMG_HEIGHT - CONV1_STRIDE; x += CONV1_STRIDE) {
+	for (short filter_index = 0; filter_index < CONV1_NBOUTPUT; filter_index++) { // FILTER AND IMAGE DON'T SHARE THE SAME DIMENSION!!!!
+		for (short x = 0;x < IMG_WIDTH - CONV1_STRIDE+1;x += CONV1_STRIDE) {
+			for (short y = 0; y < IMG_HEIGHT - CONV1_STRIDE+1; y += CONV1_STRIDE) {
 				res = 0;
-				for (short ky = 0; ky < CONV1_DIM; CONV1_STRIDE) {
+				for (short ky = 0; ky < CONV1_DIM; ky+= CONV1_STRIDE) {
 					for (short kx = 0; kx < CONV1_DIM; kx += CONV1_STRIDE) {
-						res += input[IMG_DEPTH][y + ky][x + kx] * kernel[filter_index][ky][kx];
+						res += input[0][y + ky][x + kx] * kernel[filter_index][0][ky][kx]; // 0 because the depth is 1 so index 0 
 					}
 				}
-				output[filter_index][y]
+				output[filter_index][y][x] = res+bias[filter_index];
 			}
 		}
 	}
@@ -150,7 +150,7 @@ void Fc2_400_10(float 	input[FC1_NBOUTPUT], 			        // IN
 		output[k] = bias[k];                          // Start with bias
 		for (short i = 0; i < FC1_NBOUTPUT; i++)     // Sum over all 400 inputs
 			output[k] += input[i] * kernel[k][i];
-		// No ReLU here - this is the final classification layer
+		
 	}
 }
 
