@@ -111,11 +111,14 @@ void Conv2_12x12x20_5x5x40_1_0(float input[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_W
 		for (short x = 0;x < POOL1_WIDTH - CONV2_DIM + 1;x += CONV2_STRIDE) {
 			for (short y = 0; y < POOL1_HEIGHT - CONV2_DIM + 1; y += CONV2_STRIDE) {
 				res = 0;
-				for (short ky = 0; ky < CONV2_DIM; ky += CONV2_STRIDE) {
-					for (short kx = 0; kx < CONV2_DIM; kx += CONV2_STRIDE) {
-						res += input[0][y + ky][x + kx] * kernel[filter_index][0][ky][kx]; // 0 because the depth is 1 so index 0 
+				for (short z = 0; z < POOL1_NBOUTPUT; z++) {
+					for (short ky = 0; ky < CONV2_DIM; ky += CONV2_STRIDE) {
+						for (short kx = 0; kx < CONV2_DIM; kx += CONV2_STRIDE) {
+							res += input[z][y + ky][x + kx] * kernel[filter_index][z][ky][kx]; // 0 because the depth is 1 so index 0 
+						}
 					}
 				}
+
 				output[filter_index][y][x] = res + bias[filter_index];
 			}
 		}
