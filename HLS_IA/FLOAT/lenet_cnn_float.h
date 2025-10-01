@@ -87,14 +87,14 @@ void Pool1_24x24x20_2x2x20_2_0(	float 	input[CONV1_NBOUTPUT][CONV1_HEIGHT][CONV1
 				                float 	output[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH])	// OUT
 {
 	for (short z = 0; z < CONV1_NBOUTPUT; z++) {
-		for (short x = 0; x < CONV1_WIDTH - CONV1_STRIDE; x += POOL1_STRIDE) {
-			for (short y = 0; y < CONV1_HEIGHT - CONV1_STRIDE; y += POOL1_STRIDE) {
+		for (short x = 0; x < CONV1_WIDTH - POOL1_DIM + 1; x += POOL1_STRIDE) {
+			for (short y = 0; y < CONV1_HEIGHT - POOL1_DIM + 1; y += POOL1_STRIDE) {
 				float tab[4] = { input[z][y][x], input[z][y][x + 1],input[z][y + 1][x], input[z][y + 1][x + 1] };
 				float max = tab[0];
 				for (short i = 1; i < 4; i++) {  // Changed to i < 4
 					max = max < tab[i] ? tab[i] : max;
 				}
-				output[z][y / 2][x / 2] = max;
+				output[z][y / POOL1_STRIDE][x / POOL1_STRIDE] = max;
 			}
 		}
 	}
@@ -106,9 +106,10 @@ void Conv2_12x12x20_5x5x40_1_0(float input[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_W
 	float output[CONV2_NBOUTPUT][CONV2_HEIGHT][CONV2_WIDTH]) 		        // OUT
 {
 	float res = 0.0f;
+
 	for (short filter_index = 0; filter_index < CONV2_NBOUTPUT; filter_index++) { // FILTER AND IMAGE DON'T SHARE THE SAME DIMENSION!!!!
-		for (short x = 0;x < POOL1_WIDTH - CONV2_STRIDE + 1;x += CONV2_STRIDE) {
-			for (short y = 0; y < POOL1_HEIGHT - CONV2_STRIDE + 1; y += CONV2_STRIDE) {
+		for (short x = 0;x < POOL1_WIDTH - CONV2_DIM + 1;x += CONV2_STRIDE) {
+			for (short y = 0; y < POOL1_HEIGHT - CONV2_DIM + 1; y += CONV2_STRIDE) {
 				res = 0;
 				for (short ky = 0; ky < CONV2_DIM; ky += CONV2_STRIDE) {
 					for (short kx = 0; kx < CONV2_DIM; kx += CONV2_STRIDE) {
@@ -125,14 +126,14 @@ void Pool2_8x8x40_2x2x40_2_0(	float 	input[CONV2_NBOUTPUT][CONV2_HEIGHT][CONV2_W
 				                float 	output[POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH])		// OUT
 {
 	for (short z = 0; z < CONV2_NBOUTPUT; z++) {
-		for (short x = 0; x < CONV2_WIDTH - CONV2_STRIDE; x += POOL2_STRIDE) {
-			for (short y = 0; y < CONV2_HEIGHT - CONV2_STRIDE; y += POOL2_STRIDE) {
+		for (short x = 0; x < CONV2_WIDTH -POOL2_DIM + 1; x += POOL2_STRIDE) {
+			for (short y = 0; y < CONV2_HEIGHT - POOL2_DIM + 1; y += POOL2_STRIDE) {
 				float tab[4] = { input[z][y][x], input[z][y][x + 1],input[z][y + 1][x], input[z][y + 1][x + 1] };
 				float max = tab[0];
-				for (short i = 1; i < 4; i++) {  // Changed to i < 4
+				for (short i = 1; i < 4; i++) {  
 					max = max < tab[i] ? tab[i] : max;
 				}
-				output[z][y / 2][x / 2] = max;
+				output[z][y / POOL2_STRIDE][x / POOL2_STRIDE] = max;
 			}
 		}
 	}
