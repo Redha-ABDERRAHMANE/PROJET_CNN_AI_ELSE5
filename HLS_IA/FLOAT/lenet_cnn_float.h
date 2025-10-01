@@ -7,7 +7,7 @@
   * @brief   Plain C code for the implementation of Convolutional Neural Networks on FPGA
   * @brief   Designed to support Vivado HLS synthesis
   */
-
+#include<cmath>
 
 #define IMG_WIDTH	28
 #define IMG_HEIGHT	28
@@ -174,6 +174,19 @@ void Fc2_400_10(float 	input[FC1_NBOUTPUT], 			        // IN
 }
 
 
-void Softmax(float vector_in[FC2_NBOUTPUT], float vector_out[FC2_NBOUTPUT]);
+void Softmax(float vector_in[FC2_NBOUTPUT], float vector_out[FC2_NBOUTPUT]) {
+
+	float frac_sum = 0;
+	for (short k = 0;k < FC2_NBOUTPUT; k++) {      
+		frac_sum = exp(vector_in[k]);
+	}
+
+	for (short j = 0; j < FC2_NBOUTPUT;j++) {
+		vector_out[j] = exp(vector_in[j]) / frac_sum; 
+		
+	}
+
+
+}
 
 // allows on the last layer 10 neurons (classes ) soft max 
