@@ -4,8 +4,8 @@ IDIR = /usr/include/hdf5/serial/
 CFLAGS = -I$(IDIR) -O3
 LIBS = -lhdf5_serial -lm
 
-lenet_cnn_float: lenet_cnn_float.o utils.o utils.o lenet_cnn_method_def.o
-	$(CC) -o lenet_cnn_float lenet_cnn_float.o  utils.o  lenet_cnn_method_def.o $(LIBS)
+lenet_cnn_float: lenet_cnn_float.o utils.o utils.o lenet_cnn_method_def.o fixed_point.o
+	$(CC) -o lenet_cnn_float lenet_cnn_float.o  utils.o  lenet_cnn_method_def.o fixed_point.o $(LIBS)
 
 lenet_cnn_float.o: lenet_cnn_float.c 
 	$(CC) -c lenet_cnn_float.c $(CFLAGS)
@@ -18,9 +18,10 @@ lenet_cnn_method_def.o: lenet_cnn_method_def.c
 
 #conv.o: conv.c 
 #	$(CC) -c conv.c $(CFLAGS)
-
+fixed_point.o: fixed_point.c 
+	$(CC) -c fixed_point.c $(CFLAGS)
 utils.o: utils.c 
 	$(CC) -c utils.c $(CFLAGS)
 	
 clean: 
-	rm -r lenet_cnn_float.o utils.o lenet_cnn_float lenet_cnn_method_def.o
+	rm -r lenet_cnn_float.o utils.o lenet_cnn_float lenet_cnn_method_def.o fixed_point.o

@@ -2,7 +2,7 @@
 
 // Position de la virgule (nombre de bits fractionnaires)
 // Modifiable selon vos besoins
-static uint8_t FRAC_BITS = 16; // Q16.16 par défaut
+static uint8_t FRAC_BITS = 14; // Q16.16 par défaut
 
 // Conversion float vers fixed-point (int32_t)
 int32_t float_to_fixed(float f) {
@@ -61,61 +61,96 @@ void print_fixed(int32_t fixed) {
            FRAC_BITS);
 }
 
-int main() {
-    printf("=== Fixed-Point sur int32_t ===\n\n");
-    
-    // Test avec Q16.16
-    printf("Format Q16.16 (virgule au 16ème bit):\n");
-    set_fractional_bits(16);
-    
-    float val = 123.456f;
-    int32_t fixed = float_to_fixed(val);
-    
-    printf("Float: %f\n", val);
-    print_fixed(fixed);
-    
-    // Conversion vers Q8.24
-    printf("\nConversion vers Q8.24:\n");
-    int32_t fixed_24 = change_fixed_format(fixed, 16, 24);
-    set_fractional_bits(24);
-    print_fixed(fixed_24);
-    
-    // Conversion vers Q24.8
-    printf("\nConversion vers Q24.8:\n");
-    int32_t fixed_8 = change_fixed_format(fixed, 16, 8);
-    set_fractional_bits(8);
-    print_fixed(fixed_8);
-    
-    // Opérations
-    printf("\n=== Opérations ===\n");
-    set_fractional_bits(16);
-    
-    int32_t a = float_to_fixed(10.5f);
-    int32_t b = float_to_fixed(2.25f);
-    
-    printf("a = %f, b = %f\n", fixed_to_float(a), fixed_to_float(b));
-    
-    int32_t sum = fixed_add(a, b);
-    printf("a + b = %f\n", fixed_to_float(sum));
-    
-    int32_t prod = fixed_mul(a, b);
-    printf("a * b = %f\n", fixed_to_float(prod));
-    
-    int32_t quot = fixed_div(a, b);
-    printf("a / b = %f\n", fixed_to_float(quot));
-    
-    // Représentation binaire
-    printf("\n=== Représentation binaire ===\n");
-    int32_t test = float_to_fixed(5.75f); // 5.75 = 5 + 0.75 = 5 + 3/4
-    printf("Valeur: 5.75\n");
-    printf("Binaire: ");
-    for (int i = 31; i >= 0; i--) {
-        printf("%d", (test >> i) & 1);
-        if (i == 16) printf(" | "); // Séparation virgule
+
+
+
+void float_to_fixed_1d(float *ft, int32_t *fxt,int length) {
+
+    for (int i = 0; i < length; i++) {
+        fxt[i] = float_to_fixed(ft[i]);
+        
     }
-    printf("\n         ");
-    printf("Partie entière (16 bits) | Partie fractionnaire (16 bits)\n");
-    print_fixed(test);
-    
-    return 0;
 }
+void float_to_fixed_2d(float* ft, int32_t* fxt,int height,int width) {
+    int total_elements = height * width;
+    for (int i = 0; i < total_elements; i++) {
+        fxt[i] = float_to_fixed(ft[i]);
+       
+    }
+        
+}
+void float_to_fixed_3d(float* ft, int32_t* fxt, int depth, int height, int width) {
+    int total_elements =depth* height * width;
+    for (int i = 0; i < total_elements; i++) {
+        fxt[i] = float_to_fixed(ft[i]);
+
+    }
+}
+void float_to_fixed_4d(float* ft, int32_t* fxt, int size, int depth, int height, int width) {
+    int total_elements = size*depth* height * width;
+    for (int i = 0; i < total_elements; i++) {
+        fxt[i] = float_to_fixed(ft[i]);
+
+    }
+
+    
+}
+
+// int main() {
+//     printf("=== Fixed-Point sur int32_t ===\n\n");
+    
+//     // Test avec Q16.16
+//     printf("Format Q16.16 (virgule au 16ème bit):\n");
+//     set_fractional_bits(16);
+    
+//     float val = 123.456f;
+//     int32_t fixed = float_to_fixed(val);
+    
+//     printf("Float: %f\n", val);
+//     print_fixed(fixed);
+    
+//     // Conversion vers Q8.24
+//     printf("\nConversion vers Q8.24:\n");
+//     int32_t fixed_24 = change_fixed_format(fixed, 16, 24);
+//     set_fractional_bits(24);
+//     print_fixed(fixed_24);
+    
+//     // Conversion vers Q24.8
+//     printf("\nConversion vers Q24.8:\n");
+//     int32_t fixed_8 = change_fixed_format(fixed, 16, 8);
+//     set_fractional_bits(8);
+//     print_fixed(fixed_8);
+    
+//     // Opérations
+//     printf("\n=== Opérations ===\n");
+//     set_fractional_bits(16);
+    
+//     int32_t a = float_to_fixed(10.5f);
+//     int32_t b = float_to_fixed(2.25f);
+    
+//     printf("a = %f, b = %f\n", fixed_to_float(a), fixed_to_float(b));
+    
+//     int32_t sum = fixed_add(a, b);
+//     printf("a + b = %f\n", fixed_to_float(sum));
+    
+//     int32_t prod = fixed_mul(a, b);
+//     printf("a * b = %f\n", fixed_to_float(prod));
+    
+//     int32_t quot = fixed_div(a, b);
+//     printf("a / b = %f\n", fixed_to_float(quot));
+    
+//     // Représentation binaire
+//     printf("\n=== Représentation binaire ===\n");
+//     int32_t test = float_to_fixed(5.75f); // 5.75 = 5 + 0.75 = 5 + 3/4
+//     printf("Valeur: 5.75\n");
+//     printf("Binaire: ");
+//     for (int i = 31; i >= 0; i--) {
+//         printf("%d", (test >> i) & 1);
+//         if (i == 16) printf(" | "); // Séparation virgule
+//     }
+//     printf("\n         ");
+//     printf("Partie entière (16 bits) | Partie fractionnaire (16 bits)\n");
+//     print_fixed(test);
+    
+//     return 0;
+// }

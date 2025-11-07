@@ -54,3 +54,4 @@ dkms.conf
 # debug information files
 *.dwo
 /.vs
+HLS_IA/FIXED_POINT/CppProperties.json
