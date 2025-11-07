@@ -8,6 +8,9 @@
   * @brief   Designed to support Vivado HLS synthesis
   */
 #include<math.h>
+#include "fixed_point.h"
+
+
 
 #define IMG_WIDTH	28
 #define IMG_HEIGHT	28

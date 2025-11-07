@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    lenet_cnn_float.c
+  * @file    lenet_cnn_int32_t.c
   * @author  Sébastien Bilavarn, LEAT, CNRS, Université Côte d'Azur, France
   * @version V1.0
   * @date    04 february 2019
@@ -25,30 +25,30 @@
 // Xilinx time measurement
 //#include "sds_lib.h"    
 
-#include "lenet_cnn_float.h"
+#include "lenet_cnn_int32_t.h"
 
 // Top Level HLS function
-void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
-				float 	conv1_kernel[CONV1_NBOUTPUT][IMG_DEPTH][CONV1_DIM][CONV1_DIM],		// IN
-				float 	conv1_bias[CONV1_NBOUTPUT], 						                // IN
-				float 	conv2_kernel[CONV2_NBOUTPUT][POOL1_NBOUTPUT][CONV2_DIM][CONV2_DIM], // IN
-				float 	conv2_bias[CONV2_NBOUTPUT], 						                // IN
-				float 	fc1_kernel[FC1_NBOUTPUT][POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH],// IN
-				float 	fc1_bias[FC1_NBOUTPUT],			 				                    // IN
-				float 	fc2_kernel[FC2_NBOUTPUT][FC1_NBOUTPUT], 				            // IN
-				float 	fc2_bias[FC2_NBOUTPUT], 						                    // IN
-				float 	output[FC2_NBOUTPUT]) {							                    // OUT
+void lenet_cnn(	int32_t 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
+				int32_t 	conv1_kernel[CONV1_NBOUTPUT][IMG_DEPTH][CONV1_DIM][CONV1_DIM],		// IN
+				int32_t 	conv1_bias[CONV1_NBOUTPUT], 						                // IN
+				int32_t 	conv2_kernel[CONV2_NBOUTPUT][POOL1_NBOUTPUT][CONV2_DIM][CONV2_DIM], // IN
+				int32_t 	conv2_bias[CONV2_NBOUTPUT], 						                // IN
+				int32_t 	fc1_kernel[FC1_NBOUTPUT][POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH],// IN
+				int32_t 	fc1_bias[FC1_NBOUTPUT],			 				                    // IN
+				int32_t 	fc2_kernel[FC2_NBOUTPUT][FC1_NBOUTPUT], 				            // IN
+				int32_t 	fc2_bias[FC2_NBOUTPUT], 						                    // IN
+				int32_t 	output[FC2_NBOUTPUT]) {							                    // OUT
   
-  float	 	conv1_output[CONV1_NBOUTPUT][CONV1_HEIGHT][CONV1_WIDTH]; 
-  float 	pool1_output[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH]; 
-  float	 	conv2_output[CONV2_NBOUTPUT][CONV2_HEIGHT][CONV2_WIDTH]; 
-  float 	pool2_output[POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH]; 
-  float 	fc1_output[FC1_NBOUTPUT]; 
+  int32_t	 	conv1_output[CONV1_NBOUTPUT][CONV1_HEIGHT][CONV1_WIDTH]; 
+  int32_t 	pool1_output[POOL1_NBOUTPUT][POOL1_HEIGHT][POOL1_WIDTH]; 
+  int32_t	 	conv2_output[CONV2_NBOUTPUT][CONV2_HEIGHT][CONV2_WIDTH]; 
+  int32_t 	pool2_output[POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH]; 
+  int32_t 	fc1_output[FC1_NBOUTPUT]; 
   short 	k, y, x; 
 
   Conv1_28x28x1_5x5x20_1_0(input, conv1_kernel, conv1_bias, conv1_output); 
 /*  printf("\nCONV1_WIDTH / CONV1_HEIGHT: %d / %d\n", CONV1_WIDTH, CONV1_HEIGHT); 
-  WritePgmFile(output_filename, (float *)CONV1_OUTPUT[0], CONV1_WIDTH, CONV1_HEIGHT); 
+  WritePgmFile(output_filename, (int32_t *)CONV1_OUTPUT[0], CONV1_WIDTH, CONV1_HEIGHT); 
   printf("\nConv1 output[0]: \n"); 
   for (y=0; y<CONV1_HEIGHT; y++) {
     for (x=0; x<CONV1_WIDTH; x++) 
@@ -59,7 +59,7 @@ void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
 
   Pool1_24x24x20_2x2x20_2_0(conv1_output, pool1_output);
 /*  printf("\nPOOL1_WIDTH / POOL1_HEIGHT: %d / %d\n", POOL1_WIDTH, POOL1_HEIGHT); 
-  WritePgmFile(output_filename, (float *)POOL1_OUTPUT[0], POOL1_WIDTH, POOL1_HEIGHT); 
+  WritePgmFile(output_filename, (int32_t *)POOL1_OUTPUT[0], POOL1_WIDTH, POOL1_HEIGHT); 
   printf("\nPool1 output[0]: \n"); 
   for (y=0; y<POOL1_HEIGHT; y++) {
     for (x=0; x<POOL1_WIDTH; x++) 
@@ -70,7 +70,7 @@ void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
 
   Conv2_12x12x20_5x5x40_1_0(pool1_output, conv2_kernel, conv2_bias, conv2_output); 
 /*  printf("\nCONV2_WIDTH / CONV2_HEIGHT: %d / %d\n", CONV2_WIDTH, CONV2_HEIGHT); 
-  WritePgmFile(output_filename, (float *)CONV2_OUTPUT[0], CONV2_WIDTH, CONV2_HEIGHT); 
+  WritePgmFile(output_filename, (int32_t *)CONV2_OUTPUT[0], CONV2_WIDTH, CONV2_HEIGHT); 
   printf("\nConv2 output[0]: \n");
   for (y=0; y<CONV2_HEIGHT; y++) {
     for (x=0; x<CONV2_WIDTH; x++) 
@@ -81,7 +81,7 @@ void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
 
   Pool2_8x8x40_2x2x40_2_0(conv2_output, pool2_output); 
 /*  printf("\nPOOL2_WIDTH / POOL2_HEIGHT: %d / %d\n", POOL2_WIDTH, POOL2_HEIGHT); 
-  WritePgmFile(output_filename, (float *)POOL2_OUTPUT[15], POOL2_WIDTH, POOL2_HEIGHT); 
+  WritePgmFile(output_filename, (int32_t *)POOL2_OUTPUT[15], POOL2_WIDTH, POOL2_HEIGHT); 
   printf("\nPool2 output[0]: \n"); 
   for (y=0; y<POOL2_HEIGHT; y++) {
     for (x=0; x<POOL2_WIDTH; x++) 
@@ -107,6 +107,7 @@ void lenet_cnn(	float 	input[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH], 							// IN
 
 // GLOBAL VARIABLES
 unsigned char 	REF_IMG[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH]; 
+
 float 			INPUT_NORM[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH]; 
 float 			CONV1_KERNEL[CONV1_NBOUTPUT][IMG_DEPTH][CONV1_DIM][CONV1_DIM]; 
 float 			CONV1_BIAS[CONV1_NBOUTPUT]; 
@@ -118,6 +119,19 @@ float 			FC2_KERNEL[FC2_NBOUTPUT][FC1_NBOUTPUT];
 float 			FC2_BIAS[FC2_NBOUTPUT]; 
 float 			FC2_OUTPUT[FC2_NBOUTPUT]; 
 float			SOFTMAX_OUTPUT[FC2_NBOUTPUT]; 
+
+//FIXED POINT VERSION
+int32_t 			INPUT_NORM_F[IMG_DEPTH][IMG_HEIGHT][IMG_WIDTH]; 
+int32_t 			CONV1_KERNEL_F[CONV1_NBOUTPUT][IMG_DEPTH][CONV1_DIM][CONV1_DIM]; 
+int32_t 			CONV1_BIAS_F[CONV1_NBOUTPUT]; 
+int32_t 			CONV2_KERNEL_F[CONV2_NBOUTPUT][POOL1_NBOUTPUT][CONV2_DIM][CONV2_DIM]; 
+int32_t 			CONV2_BIAS_F[CONV2_NBOUTPUT]; 
+int32_t 			FC1_KERNEL_F[FC1_NBOUTPUT][POOL2_NBOUTPUT][POOL2_HEIGHT][POOL2_WIDTH]; 
+int32_t 			FC1_BIAS_F[FC1_NBOUTPUT]; 
+int32_t 			FC2_KERNEL_F[FC2_NBOUTPUT][FC1_NBOUTPUT]; 
+int32_t 			FC2_BIAS_F[FC2_NBOUTPUT]; 
+int32_t 			FC2_OUTPUT_F[FC2_NBOUTPUT]; 
+int32_t			SOFTMAX_OUTPUT_F[FC2_NBOUTPUT]; 
 
 /**
   ******************************************************************************
@@ -150,7 +164,7 @@ void main() {
   unsigned char labels_legend[10] = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; 
   char 		img_filename[120]; 
   char 		img_count[10]; 
-  float 	max; 
+  int32_t 	max; 
   struct timeval start, end; 
   double 	tdiff, tmin, tmax, tavg; 
   unsigned long long xilinx_start, xilinx_end, xilinx_time, xilinx_time_max, xilinx_time_min, xilinx_time_avg; 
@@ -189,7 +203,10 @@ void main() {
   error = 0; 		    // number of mispredictions
 
   // MAIN TEST LOOP
-  gettimeofday(&start, NULL); 
+  gettimeofday(&start, NULL);
+  
+  for(int i =0; i<)
+  
   while (1) { 
 //  for (x = 0; x < 1; x++) {
 
@@ -211,7 +228,7 @@ void main() {
 
     ReadPgmFile(img_filename, (unsigned char *)REF_IMG); 
 
-    NormalizeImg((unsigned char *)REF_IMG, (float *)INPUT_NORM, IMG_WIDTH, IMG_WIDTH); 
+    NormalizeImg((unsigned char *)REF_IMG, (int32_t *)INPUT_NORM, IMG_WIDTH, IMG_WIDTH); 
 /*  for (z = 0; z < IMG_DEPTH; z++)
     for (y=0; y<IMG_HEIGHT; y++) {
       for (x=0; x<IMG_WIDTH; x++)  
@@ -266,7 +283,7 @@ void main() {
   printf("TOTAL PROCESSING TIME (gettimeofday): %f s\n", tdiff); 
 
   printf("\n\nErrors : %d / %d", error, m); 
-  printf("\n\nSuccess rate = %f%%", (1-((float)error/m))*100); 
+  printf("\n\nSuccess rate = %f%%", (1-((int32_t)error/m))*100); 
 
 ////  printf("\n\nThw_min = %lld cpu cycles \t Thw_max = %lld cpu cycles \t Thw_avg = %lld cpu cycles (Xilinx) ", xilinx_time_min, xilinx_time_max, xilinx_time_avg/m );
 
